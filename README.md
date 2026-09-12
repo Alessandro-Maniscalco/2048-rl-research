@@ -16,8 +16,6 @@ Download the replay HTML and open it in a browser, or serve the repository local
 
 The highest comparable **no-undo score I found in an identifiable author's code repository** is **1,704,908**, reported by [MacroXue's 2048 AI](https://github.com/macroxue/2048-ai#2048---ai), with reproduction instructions. This is an author-published result, **not an independently certified all-internet world record**. Different variants, undo-assisted games and theoretical maxima are not comparable. Sources checked September 12, 2026. A [video listing also advertises 3.8 million points](https://justplay2048.com/videos); its no-undo conditions were not verified, so it is not used as the comparable benchmark.
 
-A new campaign is attempting up to **1,000 fresh games with 16 CPU workers**, bounded to 12 hours, using the unchanged player behind the local record. All attempts, failures and time limits are retained locally. Record hunting increases opportunities for an exceptional game; it does not by itself demonstrate that the policy improved. This README reports completed, verified evidence only.
-
 ## What was tested
 
 These are selected results from different experiments, **not a single budget-matched leaderboard**. Means are raw game points; “selection” means those games were available for choosing models. Details and equations are in [the model notes](docs/MODELS.md).

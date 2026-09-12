@@ -122,9 +122,9 @@ Goal states have probability one and failures zero. These probabilities are not 
 
 For the **same frozen neural Q model**, increasing decision-time depth from two to three raised the 100-game confirmation mean from **41,031.36 to 56,191.04**. This is not three-step TD. A depth-four eight-game screen was promising but too small to establish superiority.
 
-An earlier timed hybrid averaged **636,750.44** over 100 fresh games. A separate 16-pair fixed-work table ablation averaged **715,240.25 with tables / 613,404.50 without**, but the score-difference interval included zero; tables were 2.68× faster. A four-million-work screen cost 3.25× as much without establishing a gain, so new record attempts use the economical one-million-work player. Its verified best game is **1,357,916**. Cached full-rank search accelerated queries without proving a better full-game policy. Longer rollout choices sometimes reversed under fresh samples: Monte Carlo noise is substantial.
+An earlier timed hybrid averaged **636,750.44** over 100 fresh games. A separate 16-pair fixed-work table ablation averaged **715,240.25 with tables / 613,404.50 without**, but the score-difference interval included zero; tables were 2.68× faster. A four-million-work screen cost 3.25× as much without establishing a gain, so the record attempts used the economical one-million-work player. Its verified best game is **1,357,916**. Cached full-rank search accelerated queries without proving a better full-game policy. Longer rollout choices sometimes reversed under fresh samples: Monte Carlo noise is substantial.
 
-The CPU-heavy record campaign maximizes independent attempts, not training updates. A record can improve while mean policy strength remains unchanged.
+The CPU-heavy record experiments tested independent games without training updates. A record can improve while mean policy strength remains unchanged.
 
 ## References and attribution
 
