@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2048 learning lab</title>
+<style>
+body{font:16px system-ui;background:#f5f3ed;color:#24332e;margin:0;padding:36px;max-width:1300px;margin:auto}h1{font-size:38px;margin:12px 0}p{max-width:900px;line-height:1.6;color:#52625c}.tag{font-size:12px;color:#167d8d;letter-spacing:2px;text-transform:uppercase}a{color:#167d8d}nav{display:flex;gap:20px;flex-wrap:wrap;margin:24px 0}img{width:100%;border-radius:12px;background:white}table{border-collapse:collapse;width:100%;background:white;border-radius:12px}th,td{text-align:left;padding:13px;border-bottom:1px solid #e7eae6}th{font-size:12px;text-transform:uppercase;color:#60756a}small{color:#746b5d}.published{color:#9b693e}section{margin:32px 0}.scroll{overflow-x:auto}.plotgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:20px;align-items:start}
+</style>
+<span class="tag">Local experiment notebook</span><h1>Learning to play 2048</h1>
+<p>Compare measured scores, follow learning curves, and replay a full game. Loss measures the training objective; raw game score measures playing strength. Published pretrained weights are labeled separately from models trained on this Mac.</p>
+<nav>
+<a href="mlp_overnight/review.html">MLP findings and interpretation</a>
+<a href="mlp_overnight/index.html">Overnight MLP experiments: questions, results, learnings</a>
+<a href="local_test_record_replay.html">Local test record: 581,592</a>
+<a href="local_best_replay.html">Another local game</a>
+<a href="dqn16_replay.html">Watch direct Q argmax</a><a href="dqn16_planning_replay.html">Q-network + planning: 81,424</a>
+<a href="published_record_1000_replay.html">Published model: selected record</a>
+<a href="ablations.json">Snake, never-up, and value-only tests</a>
+</nav>
+<section><h2>Fresh held-out tests</h2><p>These seeds were reserved until model selection finished. They are separate from the validation games used for tuning. A record game is selected from the evaluation; the average is the more useful measure of playing strength.</p>
+<table><thead><tr><th>Frozen model</th><th>Mean score</th><th>Games</th><th>Best score</th></tr></thead><tbody id="tests"></tbody></table></section>
+<section><h2>Training progress</h2><div class="plotgrid"><img data-refresh="training_panel_0.png" src="training_panel_0.png" alt="N-tuple validation curves"><img data-refresh="training_panel_1.png" src="training_panel_1.png" alt="Neural training scores"><img data-refresh="training_panel_2.png" src="training_panel_2.png" alt="Training losses"><img data-refresh="training_panel_3.png" src="training_panel_3.png" alt="Top validation scores"><img data-refresh="episode_panel_0.png" src="episode_panel_0.png" alt="Mean episode length across training"><img data-refresh="episode_panel_1.png" src="episode_panel_1.png" alt="Fraction of training games reaching tile 2048"></div></section>
+<section><h2>16 inputs → 4 Q-values</h2>
+<p>The network reads the current board and chooses the largest legal Q-value. These runs compare numeric tile encodings and rewards. Each first-pass run used 3 million transitions, batch size 4,096, and 100 validation games.</p>
+<div class="plotgrid"><img data-refresh="dqn16_panel_0.png" src="dqn16_panel_0.png" alt="DQN validation curves"><img data-refresh="dqn16_panel_1.png" src="dqn16_panel_1.png" alt="DQN input and reward comparisons"><img data-refresh="dqn16_panel_2.png" src="dqn16_panel_2.png" alt="DQN TD loss"></div>
+<h2>Repeatability, batch size, and discount</h2><p>Error bars show the standard deviation of mean scores across three training seeds. Batch tests keep transitions and update count fixed; a larger batch reuses more stored data per update. CPU and MPS runs are labeled. These are validation results, not fresh tests.</p>
+<div class="plotgrid"><img data-refresh="dqn16_followup_panel_0.png" src="dqn16_followup_panel_0.png" alt="Three-seed comparison"><img data-refresh="dqn16_followup_panel_1.png" src="dqn16_followup_panel_1.png" alt="Batch-size comparison"><img data-refresh="dqn16_followup_panel_2.png" src="dqn16_followup_panel_2.png" alt="Discount comparison"></div><h2>Does planning help the Q-network?</h2><p>Freeze the weights, simulate one legal move, enumerate every possible tile spawn, and use the network to estimate the remaining reward. The extra computation improves action selection without more training.</p><img data-refresh="q_planning.png" src="q_planning.png" alt="Direct Q argmax compared with one-step planning using the same trained networks">
+<div class="plotgrid"><img data-refresh="q_depth_panel_0.png" src="q_depth_panel_0.png" alt="Score with zero, one, or two moves of lookahead"><img data-refresh="q_depth_panel_1.png" src="q_depth_panel_1.png" alt="2048 and 4096 reaching rates by search depth"></div><p><a href="q_planning_comparison.json">Same Q-network: direct argmax versus exact move-and-spawn lookahead</a> · <a href="compute/neural.json">CPU / GPU batch benchmark</a></p></section>
+<section><h2>Network size and planning</h2><p>Both extended networks use 16 scalar inputs and four Q outputs. The wider network improved direct play but was less useful inside this search. These runs have the same cumulative transition count; their extension minibatches differ, so this is not an isolated width-only test.</p><img data-refresh="width_and_planning.png" src="width_and_planning.png" alt="Larger network improves direct play but performs worse in two-move search"><h2>Saved validation evaluations</h2><p>Different training budgets and validation suites are recorded in each linked result. This is an experiment ledger; scores across algorithm families are not a controlled comparison.</p>
+<div class="scroll"><table><thead><tr><th>Experiment</th><th>Mean score</th><th>Games</th><th>Origin</th></tr></thead><tbody id="results"></tbody></table></div></section>
+<script>
+function table(id, data, heldout=false) {
+ const body=document.getElementById(id);body.replaceChildren();
+ for(const row of data){
+  const tr=document.createElement('tr');
+  const last=heldout?(row.max_score==null?'—':Math.round(row.max_score).toLocaleString()):(row.source==='published'?'Published pretrained':'Trained locally');
+  for(const [i,v] of [row.name,Math.round(row.mean_score).toLocaleString(),row.games,last].entries()){
+   const td=document.createElement('td');
+   if(i===0){const a=document.createElement('a');a.href=row.path;a.textContent=v;td.append(a)}else td.textContent=v;
+   if(row.source==='published')td.className='published';tr.append(td);
+  }body.append(tr);
+ }
+}
+async function refresh(){try{
+ table('results',await(await fetch('results.json?'+Date.now())).json());
+ table('tests',await(await fetch('heldout_results.json?'+Date.now())).json(),true);
+ for(const image of document.querySelectorAll('img[data-refresh]'))image.src=image.dataset.refresh+'?'+Date.now();
+}catch(e){console.log(e)}}refresh();setInterval(refresh,30000);
+</script></html>

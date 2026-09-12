@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2048 · Learning replay</title>
+<style>
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #544c44; background: #faf8ef; }
+* { box-sizing: border-box; }
+body { margin: 0; padding: 40px 20px; }
+main { max-width: 850px; margin: auto; }
+.eyebrow { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #897a69; }
+h1 { font-size: 44px; letter-spacing: -2px; margin: 12px 0; }
+.lead { line-height: 1.6; color: #807366; max-width: 590px; }
+.layout { display: grid; grid-template-columns: minmax(250px,420px) 1fr; gap: 32px; margin-top: 28px; }
+#board { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); grid-template-rows: repeat(4,minmax(0,1fr)); width: 100%; gap: 10px; background: #bbada0; padding: 10px; border-radius: 12px; aspect-ratio: 1; }
+.tile { min-width: 0; min-height: 0; display: flex; align-items: center; justify-content: center; font-size: clamp(18px,4vw,34px); font-weight: 750; border-radius: 6px; }
+.stat { padding: 14px 0; border-bottom: 1px solid #e6dece; }
+.stat span { display: block; color: #8c7d6e; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.stat strong { display: block; font-size: 26px; margin-top: 6px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; align-items: center; }
+button, select { font: inherit; background: #eee7d9; border: 0; border-radius: 7px; color: #544c44; padding: 10px 14px; cursor: pointer; }
+#play { background: #197970; color: white; min-width: 88px; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #197970; outline-offset: 3px; }
+input[type=range] { width: 100%; accent-color: #197970; margin: 20px 0 4px; }
+.note { font-size: 13px; line-height: 1.7; color: #897a69; }
+@media(max-width:650px) { .layout { grid-template-columns: 1fr; } aside { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } h1 { font-size: 36px; } }
+</style>
+</head>
+<body><main>
+<div class="eyebrow">Reinforcement learning · 2048 lab</div>
+<h1>Watch the decisions.</h1>
+<p class="lead">A complete recorded game. Pause on any move to inspect the board, the action, and the immediate reward.</p>
+<div class="layout"><section aria-label="Game replay">
+<div id="board" aria-label="2048 board"></div>
+<input id="timeline" type="range" min="0" value="0" aria-label="Replay move">
+<div class="controls"><button id="play">Play</button><button id="back" aria-label="Previous move">←</button><button id="next" aria-label="Next move">→</button><button id="restart">Restart</button><select id="speed" aria-label="Replay speed"><option value="400">Slow</option><option value="100" selected>Normal</option><option value="30">Fast</option></select></div>
+<p class="note" id="position"></p>
+</section><aside>
+<div class="stat"><span>Agent</span><strong id="agent"></strong></div>
+<div class="stat"><span>Score</span><strong id="score"></strong></div>
+<div class="stat"><span>Last action</span><strong id="action"></strong></div>
+<div class="stat"><span>Immediate reward</span><strong id="reward"></strong></div>
+<div class="stat"><span>Largest tile</span><strong id="tile"></strong></div>
+</aside></div>
+<p class="note" id="details"></p>
+<p class="note">The policy is frozen during this replay. A score is the sum of merge rewards. Reaching 2048 does not end the game.</p>
+</main><script>
+const replay = __REPLAY_DATA__;
+const frames = replay.frames;
+const element = id => document.getElementById(id);
+let index = 0, timer = null;
+element('timeline').max = frames.length - 1;
+element('agent').textContent = replay.algorithm;
+element('details').textContent = `Seed ${replay.result.seed} · ${replay.result.length} moves · Final score ${replay.result.score.toLocaleString()} · ${replay.result.terminated ? 'Game over: no legal moves' : 'Stopped at experiment time limit'}`;
+function draw() {
+  const frame = frames[index];
+  element('board').replaceChildren(...frame.board.flat().map(value => {
+    const cell = document.createElement('div');
+    cell.className = 'tile'; cell.textContent = value || '';
+    cell.style.background = replay.colors[value] || '#3c3a32';
+    cell.style.color = value < 8 ? '#776e65' : '#f9f6f2';
+    cell.setAttribute('aria-label', value ? String(value) : 'Empty');
+    return cell;
+  }));
+  element('timeline').value = index;
+  element('score').textContent = frame.score.toLocaleString();
+  element('action').textContent = frame.action === null ? 'Initial board' : replay.actions[frame.action];
+  element('reward').textContent = `+${frame.reward}`;
+  element('tile').textContent = Math.max(...frame.board.flat());
+  element('position').textContent = `Move ${index} of ${frames.length - 1}`;
+  element('back').disabled = index === 0;
+  element('next').disabled = index === frames.length - 1;
+}
+function pause() { clearInterval(timer); timer = null; element('play').textContent = 'Play'; }
+function start() {
+  if (index === frames.length - 1) index = 0;
+  element('play').textContent = 'Pause';
+  timer = setInterval(() => { index++; draw(); if (index === frames.length - 1) pause(); }, Number(element('speed').value));
+}
+element('play').onclick = () => timer ? pause() : start();
+element('back').onclick = () => { pause(); index = Math.max(0, index - 1); draw(); };
+element('next').onclick = () => { pause(); index = Math.min(frames.length - 1, index + 1); draw(); };
+element('restart').onclick = () => { pause(); index = 0; draw(); };
+element('timeline').oninput = event => { pause(); index = Number(event.target.value); draw(); };
+element('speed').onchange = () => { if (timer) { pause(); start(); } };
+draw();
+</script></body></html>

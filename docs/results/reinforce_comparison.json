@@ -1,0 +1,61 @@
+{
+  "runs": [
+    {
+      "id": "transformer_teacher_ppo_actor_seed0",
+      "label": "PPO \u00b7 supervised actor",
+      "selected_score": 6513.72,
+      "mean_score": 4754.84,
+      "transitions": 1048576,
+      "updates": 7520,
+      "training_seconds": 438.7887636659434
+    },
+    {
+      "id": "transformer_teacher_ppo_scratch_seed0",
+      "label": "PPO \u00b7 scratch",
+      "selected_score": 3911.24,
+      "mean_score": 3704.84,
+      "transitions": 1048576,
+      "updates": 16158,
+      "training_seconds": 756.2958848341368
+    },
+    {
+      "id": "transformer_reinforce_actor_seed0",
+      "label": "Plain REINFORCE \u00b7 supervised actor",
+      "selected_score": 7151.08,
+      "mean_score": 5955.68,
+      "transitions": 1091619,
+      "updates": 25,
+      "training_seconds": 403.26933633192675
+    },
+    {
+      "id": "transformer_reinforce_scratch_seed0",
+      "label": "Plain REINFORCE \u00b7 scratch",
+      "selected_score": 2477.6,
+      "mean_score": 1305.0,
+      "transitions": 1051355,
+      "updates": 67,
+      "training_seconds": 394.0561253740452
+    }
+  ],
+  "training_seeds": 1,
+  "reserved_test_used": false,
+  "baseline_reference_mean": 6513.72,
+  "actor_comparisons": [
+    {
+      "reference": "supervised actor",
+      "difference": -558.04,
+      "paired_game_bootstrap_95": [
+        -1778.527,
+        651.813
+      ]
+    },
+    {
+      "reference": "PPO actor final",
+      "difference": 1200.84,
+      "paired_game_bootstrap_95": [
+        326.645,
+        2123.343
+      ]
+    }
+  ]
+}

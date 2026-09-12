@@ -1,0 +1,44 @@
+[
+  {
+    "file": "heldout_results.json",
+    "original_local_artifact": "runs/research/heldout_results.json",
+    "original_sha256": "6d2abf5f646cb2bda0d3450f43ab3992780028f81c1d35e362ef862e1d5cf1a3",
+    "note": "Paths made repository-relative; artifacts referenced inside are not necessarily distributed."
+  },
+  {
+    "file": "neural_heldout.json",
+    "original_local_artifact": "runs/research/neural_heldout.json",
+    "original_sha256": "26aaf68f7a7469f19b76a9d15be7c216fb6737465df77b07c115792ade077a94",
+    "note": "Paths made repository-relative; artifacts referenced inside are not necessarily distributed."
+  },
+  {
+    "file": "qr_scalar_three_seed_comparison.json",
+    "original_local_artifact": "runs/research/scaled_transformer/qr_scalar_three_seed_comparison.json",
+    "original_sha256": "031ec0ab761dc30f4997a340a2efb8c02f44ce950ef995f08cf08d1cae5c962e",
+    "note": "Paths made repository-relative; artifacts referenced inside are not necessarily distributed."
+  },
+  {
+    "file": "td_horizon_comparison.json",
+    "original_local_artifact": "runs/research/scaled_transformer/td_horizon_comparison.json",
+    "original_sha256": "8bcd8728c3556fc80666f1617aad06b8e2eaf12ef343a400f6ff54f8b699ae3a",
+    "note": "Paths made repository-relative; artifacts referenced inside are not necessarily distributed."
+  },
+  {
+    "file": "reinforce_comparison.json",
+    "original_local_artifact": "runs/research/scaled_transformer/reinforce_comparison.json",
+    "original_sha256": "02bca659d4ef3c4981eb223f0336a059a0b0d8793b2bf42203eb8a52c3ceafae",
+    "note": "Paths made repository-relative; artifacts referenced inside are not necessarily distributed."
+  },
+  {
+    "file": "transformer_teacher_capacity_comparison.json",
+    "original_local_artifact": "runs/research/scaled_transformer/transformer_teacher_capacity_comparison.json",
+    "original_sha256": "2121783c556c37abc170d9796bdf193775db9e9d274b7f1a73fb524d0754ffad",
+    "note": "Paths made repository-relative; artifacts referenced inside are not necessarily distributed."
+  },
+  {
+    "file": "cnn_dagger_comparison.json",
+    "original_local_artifact": "runs/research/scaled_transformer/cnn_dagger_comparison.json",
+    "original_sha256": "4f597aa529012ede59e3b41ee67253a9f9d35a624e60cc3acb4e1089e1e32ee1",
+    "note": "Paths made repository-relative; artifacts referenced inside are not necessarily distributed."
+  }
+]

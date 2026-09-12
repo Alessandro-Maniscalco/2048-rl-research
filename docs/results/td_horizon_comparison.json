@@ -1,0 +1,60 @@
+{
+  "primary_endpoint": "Final-checkpoint raw mean over100 common selection games at4,194,304transitions per trainingseed.",
+  "by_horizon": {
+    "1": {
+      "training_seeds": [
+        0,
+        1,
+        2
+      ],
+      "scores": [
+        3386.36,
+        6064.96,
+        6805.8
+      ],
+      "mean": 5419.04,
+      "training_seed_sample_sd": 1798.9029888240223
+    },
+    "3": {
+      "training_seeds": [
+        0,
+        1,
+        2
+      ],
+      "scores": [
+        10136.12,
+        5659.92,
+        6957.64
+      ],
+      "mean": 7584.56,
+      "training_seed_sample_sd": 2303.0117509035863
+    },
+    "5": {
+      "training_seeds": [
+        0,
+        1,
+        2
+      ],
+      "scores": [
+        6409.48,
+        7377.2,
+        6155.4
+      ],
+      "mean": 6647.360000000001,
+      "training_seed_sample_sd": 644.7006908635976
+    }
+  },
+  "paired_seed_differences": {
+    "n3_minus_n1": [
+      6749.76,
+      -405.03999999999996,
+      151.84000000000015
+    ],
+    "n3_minus_n5": [
+      3726.6400000000012,
+      -1717.2799999999997,
+      802.2400000000007
+    ]
+  },
+  "interpretation": "Three-step highest observed mean; rankings differ byseed. Five-step lower observed spread among onlythree seeds, not established superior robustness. Keep n3baseline and test longer n5 as alternative. No unseen finaltest used."
+}

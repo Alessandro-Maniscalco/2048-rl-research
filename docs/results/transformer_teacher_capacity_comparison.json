@@ -1,0 +1,12 @@
+{
+  "control": "transformer_teacher_policy_scratch_seed0",
+  "variant": "transformer_teacher_policy_w256_seed0",
+  "control_mean": 3108.56,
+  "variant_mean": 3220.36,
+  "difference": 111.8,
+  "paired_ci95": [
+    -444.443,
+    681.8459999999995
+  ],
+  "learning": "The 3.19M-parameter model scored 3,220.36 versus 3,108.56 for the 0.81M-parameter scratch control after the same 16,384updates. Difference +111.80; paired95%game interval [-444.44, +681.85]. Training time was 1608.7 versus 648.7 seconds. Final held-out teacher agreement was 59.67% versus 59.18%. More width alone did not resolve the weak imitation; do not call this a general result against larger Transformers. No reserved final seeds or future search."
+}

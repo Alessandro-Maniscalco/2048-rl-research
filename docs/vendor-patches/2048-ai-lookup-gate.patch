@@ -1,0 +1,210 @@
+diff --git a/2048.cc b/2048.cc
+index bec4f1c..5d9f0f9 100644
+--- a/2048.cc
++++ b/2048.cc
+@@ -150,7 +150,7 @@ Valuation SuggestMove(Node& n, int* m, bool lookup_only = false) {
+   }
+   if (tuple10) {
+     auto prob = tuple10->SuggestMove(n, m);
+-    if (prob > 0) return {Valuation::kTuple10, prob};
++    if (prob > options.tuple10_min_probability) return {Valuation::kTuple10, prob};
+   }
+   if (line_plan) {
+     auto suggestion = line_plan->SuggestMove(n);
+@@ -392,7 +392,7 @@ int main(int argc, char* argv[]) {
+   char* log_file = nullptr;
+   int server_port = 0;
+   int c;
+-  while ((c = getopt(argc, argv, "d:i:p:s:vIL:O:P:R:S:T")) != -1) {
++  while ((c = getopt(argc, argv, "d:i:p:s:t:vIL:O:P:R:S:T")) != -1) {
+     switch (c) {
+       case 'd':
+         options.max_depth = atoi(optarg);
+@@ -407,6 +407,13 @@ int main(int argc, char* argv[]) {
+       case 's':
+         options.save_threshold = atof(optarg);
+         break;
++      case 't':
++        options.tuple10_min_probability = atof(optarg);
++        if (!(options.tuple10_min_probability >= 0 && options.tuple10_min_probability < 1)) {
++          fprintf(stderr, "Tuple10 probability threshold must be in [0,1).\n");
++          return EXIT_FAILURE;
++        }
++        break;
+       case 'v':
+         options.verbose = true;
+         break;
+diff --git a/array.h b/array.h
+index bc80eba..a67b353 100644
+--- a/array.h
++++ b/array.h
+@@ -6,10 +6,12 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <sys/mman.h>
++#include <sys/stat.h>
+ #include <unistd.h>
+ 
+ #include <algorithm>
+ #include <cerrno>
++#include <cstdint>
+ #include <functional>
+ #include <memory>
+ 
+@@ -20,6 +22,15 @@ class Array {
+       memset(chunks, 0, sizeof(chunks));
+     }
+ 
++    ~Array() {
++      for (auto chunk : chunks) {
++        if (chunk && !IsMapped(chunk)) delete[] chunk;
++      }
++      if (mapped_file) munmap(mapped_file, mapped_bytes);
++    }
++    Array(const Array&) = delete;
++    Array& operator=(const Array&) = delete;
++
+     T* locate(size_t i) const {
+       auto chunk_index = i / kChunkSize;
+       return chunks[chunk_index] ? &chunks[chunk_index][i % kChunkSize] : nullptr;
+@@ -29,8 +40,7 @@ class Array {
+       auto chunk_index = i / kChunkSize;
+       auto chunk = chunks[chunk_index];
+       if (chunk) {
+-        if (mapped_data <= chunk &&
+-            chunk < mapped_data + header.num_used_chunks * kChunkSize) {
++        if (IsMapped(chunk)) {
+           // Copy on write.
+           chunks[chunk_index] = new T[kChunkSize];
+           memcpy(chunks[chunk_index], chunk, kChunkSize * sizeof(T));
+@@ -68,21 +78,25 @@ class Array {
+         exit(1);
+       }
+ 
+-      // Map a bitmap indicating what chunks are used.
+-      auto chunk_bitmap = (uint8_t*) mmap(nullptr, kChunkBitmapBytes,
+-                                          PROT_READ, MAP_PRIVATE, fd, header_size);
+-      if (!chunk_bitmap) {
+-        perror("Failed to mmap the bitmap of used chunks");
++      // Keep the original 4096-byte file layout, but map from offset zero.
++      // Apple Silicon uses 16384-byte VM pages, so mapping at offset4096 fails.
++      struct stat info;
++      mapped_bytes = header_size + kChunkBitmapBytes +
++                     header.num_used_chunks * kChunkSize * sizeof(T);
++      if (fstat(fd, &info) != 0 || (size_t)info.st_size < mapped_bytes) {
++        fprintf(stderr, "Array file is truncated.\n");
++        close(fd);
+         exit(1);
+       }
+-
+-      // Map data in the used chunks.
+-      mapped_data = (T*) mmap(nullptr, header.num_used_chunks * kChunkSize * sizeof(T),
+-                              PROT_READ, MAP_PRIVATE, fd, header_size + kChunkBitmapBytes);
+-      if (!mapped_data) {
+-        perror("Failed to mmap data of used chunks");
++      mapped_file = mmap(nullptr, mapped_bytes, PROT_READ, MAP_PRIVATE, fd, 0);
++      close(fd);
++      if (mapped_file == MAP_FAILED) {
++        mapped_file = nullptr;
++        perror("Failed to mmap array file");
+         exit(1);
+       }
++      auto chunk_bitmap = (uint8_t*)mapped_file + header_size;
++      mapped_data = (T*)(chunk_bitmap + kChunkBitmapBytes);
+ 
+       // Setup the pointers of used chunks.
+       size_t num_used_chunks = 0;
+@@ -93,11 +107,6 @@ class Array {
+       }
+       assert(num_used_chunks == header.num_used_chunks);
+ 
+-      if (munmap(chunk_bitmap, kChunkBitmapBytes) == -1) {
+-        perror("Fail to munmap the bitmap of used chunks");
+-        exit(1);
+-      }
+-
+       printf("done\n");
+       return true;
+     }
+@@ -159,6 +168,12 @@ class Array {
+     }
+ 
+   private:
++    bool IsMapped(const T* ptr) const {
++      if (!mapped_data) return false;
++      auto address = reinterpret_cast<uintptr_t>(ptr);
++      auto begin = reinterpret_cast<uintptr_t>(mapped_data);
++      return address >= begin && address < begin + header.num_used_chunks * kChunkSize * sizeof(T);
++    }
+     static constexpr size_t kPageSize = 4096;
+     static constexpr size_t kChunkSize = 512;
+     static constexpr size_t kNumChunks = (kArraySize + kChunkSize - 1) / kChunkSize;
+@@ -178,7 +193,9 @@ class Array {
+ 
+     Header header;
+     T* chunks[kNumChunks];
+-    T* mapped_data;
++    T* mapped_data = nullptr;
++    void* mapped_file = nullptr;
++    size_t mapped_bytes = 0;
+ };
+ 
+ #endif
+diff --git a/node.h b/node.h
+index 8c3e969..9dc4717 100644
+--- a/node.h
++++ b/node.h
+@@ -22,6 +22,7 @@ struct Options {
+   int max_depth = 7;
+   int iterations = 1;
+   double min_prob = 0.001;
++  double tuple10_min_probability = 0.0;
+   bool verbose = false;
+   bool interactive = false;
+   float optimality = 0.9;
+@@ -175,13 +176,17 @@ class Node : public Board {
+ 
+     unsigned long long compact_board = 0;
+     int empty_tiles = 0;
++    bool exact_cache_key = true;
+     for (int y = 0; y < N; ++y)
+       for (int x = 0; x < N; ++x) {
++        // Four bits cannot encode rank 16 (65536) or larger without aliasing.
++        // Preserve the old cache path exactly for all ordinary-rank boards.
++        exact_cache_key = exact_cache_key && board[x][y] < 16;
+         compact_board = compact_board * 16 + board[x][y];
+         empty_tiles += board[x][y] == 0;
+       }
+ 
+-    if (!skip_cache && cache.Lookup(compact_board, prob, depth, &score))
++    if (!skip_cache && exact_cache_key && cache.Lookup(compact_board, prob, depth, &score))
+       return score;
+ 
+     float tile2_prob = prob / empty_tiles * 0.9;
+@@ -198,7 +203,8 @@ class Node : public Board {
+         board[x][y] = 0;
+       }
+     }
+-    cache.Update(compact_board, prob, depth, total_score / empty_tiles);
++    if (exact_cache_key)
++      cache.Update(compact_board, prob, depth, total_score / empty_tiles);
+     return total_score / empty_tiles;
+   }
+ 
+@@ -230,14 +236,14 @@ class Node : public Board {
+       game_over_score = -std::max(1 << 17, max_tile_score * 2);
+     } else {
+       pass_score = -INT_MAX;
+-      game_over_score = -1 << 22;
++      game_over_score = -(1 << 22);
+     }
+     skip_cache = false;
+     auto h_score = TryAllMoves(depth, 1, best_move);
+ #ifdef BIG_TUPLES
+     if (h_score < 0) {
+         pass_score = -INT_MAX;
+-        game_over_score = -1 << 22;
++        game_over_score = -(1 << 22);
+         skip_cache = true;
+         h_score = TryAllMoves(depth, 1, best_move);
+     }

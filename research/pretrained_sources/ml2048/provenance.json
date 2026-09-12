@@ -1,0 +1,24 @@
+{
+  "repository": "https://github.com/tsangwpx/ml2048",
+  "commit": "50b3b9ff8570e10110a9d12ac473c23af1dbe7e0",
+  "files": [
+    {
+      "path": "LICENSE",
+      "local": "LICENSE",
+      "bytes": 1068,
+      "sha256": "e3133d9afde70d6171b60a78c49b61028cd844c8fe3d04c698e213eee34bdace"
+    },
+    {
+      "path": "src/ml2048/policy/_network.py",
+      "local": "_network.py",
+      "bytes": 6126,
+      "sha256": "bcd9a8803fef1a79c9549f8b3079923773a7f037a3a1039d118c60fa88eeac8d"
+    },
+    {
+      "path": "assets/ml2048_20240330_013340-epoch-2500.pt",
+      "local": "ml2048_20240330_013340-epoch-2500.pt",
+      "bytes": 5813410,
+      "sha256": "6c180493eedfee288eca670dc57f9e8976a57f420c99200769d94ea645e1959c"
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+[
+  {
+    "name": "local_selected_v2",
+    "mean_score": 353812.36,
+    "max_score": 628320,
+    "games": 100,
+    "path": "local_selected_v2/test.json"
+  },
+  {
+    "name": "local_selected",
+    "mean_score": 290507.88,
+    "max_score": 581592,
+    "games": 100,
+    "path": "local_selected/test.json"
+  },
+  {
+    "name": "dqn16_planning_selected",
+    "mean_score": 38389.24,
+    "max_score": 81424,
+    "games": 100,
+    "path": "dqn16_planning_selected/test.json"
+  },
+  {
+    "name": "bc_expert_cnn_symmetry",
+    "mean_score": 8974.28,
+    "max_score": 20400,
+    "games": 100,
+    "path": "bc_expert_cnn_symmetry/test.json"
+  },
+  {
+    "name": "ppo_cpu300",
+    "mean_score": 8724.84,
+    "max_score": 24876,
+    "games": 100,
+    "path": "ppo_cpu300/test.json"
+  },
+  {
+    "name": "ppo_cnn300",
+    "mean_score": 8607.32,
+    "max_score": 32016,
+    "games": 100,
+    "path": "ppo_cnn300/test.json"
+  },
+  {
+    "name": "awr_expert_cnn_symmetry",
+    "mean_score": 5923.96,
+    "max_score": 17968,
+    "games": 100,
+    "path": "awr_expert_cnn_symmetry/test.json"
+  },
+  {
+    "name": "dqn16_long",
+    "mean_score": 4851.6,
+    "max_score": 13288,
+    "games": 100,
+    "path": "dqn16_long/test.json"
+  },
+  {
+    "name": "dqn16_gamma1",
+    "mean_score": 4014.92,
+    "max_score": 11060,
+    "games": 100,
+    "path": "dqn16_gamma1/test.json"
+  },
+  {
+    "name": "dueling16_seed1",
+    "mean_score": 3851.44,
+    "max_score": 12832,
+    "games": 100,
+    "path": "dueling16_seed1/test.json"
+  },
+  {
+    "name": "dqn16_winner_seed2",
+    "mean_score": 3748.44,
+    "max_score": 16532,
+    "games": 100,
+    "path": "dqn16_winner_seed2/test.json"
+  },
+  {
+    "name": "dueling16_seed0",
+    "mean_score": 3711.48,
+    "max_score": 11824,
+    "games": 100,
+    "path": "dueling16_seed0/test.json"
+  },
+  {
+    "name": "dueling16_seed2",
+    "mean_score": 3661.72,
+    "max_score": 11440,
+    "games": 100,
+    "path": "dueling16_seed2/test.json"
+  },
+  {
+    "name": "dqn16_gamma1_seed2",
+    "mean_score": 3401.68,
+    "max_score": 8096,
+    "games": 100,
+    "path": "dqn16_gamma1_seed2/test.json"
+  },
+  {
+    "name": "dqn16_corner_snake",
+    "mean_score": 3381.28,
+    "max_score": 10284,
+    "games": 100,
+    "path": "dqn16_corner_snake/test.json"
+  },
+  {
+    "name": "dqn16_gamma1_seed1",
+    "mean_score": 3358.88,
+    "max_score": 10748,
+    "games": 100,
+    "path": "dqn16_gamma1_seed1/test.json"
+  },
+  {
+    "name": "dqn16_exponents",
+    "mean_score": 3317.76,
+    "max_score": 8468,
+    "games": 100,
+    "path": "dqn16_exponents/test.json"
+  },
+  {
+    "name": "iql_expert_cnn_symmetry",
+    "mean_score": 3277.32,
+    "max_score": 12568,
+    "games": 100,
+    "path": "iql_expert_cnn_symmetry/test.json"
+  },
+  {
+    "name": "dqn16_control_seed2",
+    "mean_score": 3234.96,
+    "max_score": 12244,
+    "games": 100,
+    "path": "dqn16_control_seed2/test.json"
+  },
+  {
+    "name": "dqn16_winner_seed1",
+    "mean_score": 3198.56,
+    "max_score": 8508,
+    "games": 100,
+    "path": "dqn16_winner_seed1/test.json"
+  },
+  {
+    "name": "dqn16_control_seed1",
+    "mean_score": 2936.32,
+    "max_score": 7548,
+    "games": 100,
+    "path": "dqn16_control_seed1/test.json"
+  }
+]

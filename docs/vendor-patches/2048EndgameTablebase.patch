@@ -1,0 +1,50 @@
+diff --git a/native_core/src/AIPlayer.cpp b/native_core/src/AIPlayer.cpp
+index 6b5aaa0..086b089 100644
+--- a/native_core/src/AIPlayer.cpp
++++ b/native_core/src/AIPlayer.cpp
+@@ -4,7 +4,12 @@
+ #include <cmath>
+ #include <cstdint>
+ #include <cstdlib>
++#ifdef _OPENMP
+ #include <omp.h>
++#else
++// Local portable build: one search thread per independent game process.
++inline void omp_set_num_threads(int) {}
++#endif
+ #include <tuple>
+ 
+ // #include <iostream>
+@@ -362,14 +367,8 @@ uint32_t get_max_layer(double spawnrate, double depth) {
+ // ------------------------------------------------------------------
+ 
+ Cache::Cache() {
+-#ifdef _WIN32
+-  // Windows 下使用对齐内存分配
+-  table.reset(new (std::align_val_t(64)) CacheBucket[MAX_BUCKETS]);
+-#else
+-  // Linux/macOS 下使用 aligned_alloc
+-  void *ptr = std::aligned_alloc(64, MAX_BUCKETS * sizeof(CacheBucket));
+-  table.reset(reinterpret_cast<CacheBucket *>(ptr));
+-#endif
++  // C++17 aligned array-new matches unique_ptr's array-delete on every OS.
++  table.reset(new CacheBucket[MAX_BUCKETS]);
+   // 初始状态全清零
+   reset(MAX_BUCKETS);
+ }
+@@ -899,6 +898,8 @@ void AIPlayer::start_search(int32_t depth) {
+     }
+   }
+ 
++  // An interrupted/terminal search may have no root move yet.
++  if (best_operation == 0) return;
+   int32_t best_score = top_scores[best_operation - 1];
+   if (fixed_mask && ((best_operation > 0) &&
+                      (best_score < std::min(-2000, -(dead_score >> 2)) ||
+@@ -1230,4 +1231,4 @@ extern std::array<float, 4> find_best_egtb_move(uint64_t target_board,
+ //     std::cout << "-----------------------------------" << std::endl;
+ 
+ //     return 0;
+-// }
+\ No newline at end of file
++// }

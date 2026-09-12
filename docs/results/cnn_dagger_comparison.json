@@ -1,0 +1,12 @@
+{
+  "complete": true,
+  "fixed_mean": 20327.12,
+  "student_mean": 70251.44,
+  "mean_paired_difference": 49924.32,
+  "wins": 88,
+  "paired_game_bootstrap_95_interval": [
+    41092.459,
+    59012.23099999999
+  ],
+  "note": "One adaptation seed with shared external pretraining; reused selection games, not independent final test."
+}

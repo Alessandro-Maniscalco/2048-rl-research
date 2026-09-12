@@ -1,0 +1,38 @@
+diff --git a/2048.cpp b/2048.cpp
+index 7dcee58..c321967 100644
+--- a/2048.cpp
++++ b/2048.cpp
+@@ -1427,7 +1427,7 @@ void list_network() {
+ 		std::stringstream buf;
+ 
+ 		buf << w.sign();
+-		u32 p = math::log2(w.size() ?: 1) / 10;
++		u32 p = math::log2(u64(w.size() ?: 1)) / 10;
+ 		buf << "[";
+ 		buf << (w.size() / std::pow(2, p * 10));
+ 		buf << ("\0\0k\0M\0G\0T\0" + (p << 1));
+@@ -1614,7 +1614,7 @@ struct method {
+ 	template<typename source = common<weight::segment>>
+ 	struct expectimax {
+ 		constexpr inline operator method() { return { expectimax<source>::estimate, expectimax<source>::optimize }; }
+-		constexpr inline expectimax(utils::options::option opt) {
++		inline expectimax(utils::options::option opt) {
+ 			std::stringstream input;
+ 			auto next = [&](u32 n) -> u32 {
+ 				try {
+@@ -1685,13 +1685,13 @@ struct method {
+ 		std::string spec = opt["spec"].value("auto");
+ 		if (spec == "auto") {
+ 			u32 m = weight::wghts().size();
+-			u32 n = m ? math::log2(weight::wghts().front().size()) >> 2 : 0;
++			u32 n = m ? math::log2(u64(weight::wghts().front().size())) >> 2 : 0;
+ 			for (weight w : weight::wghts()) {
+ 				// check: (1) isomorphic? (2) pattern-based? (3) capacity?
+ 				if (std::accumulate(feature::feats().begin(), feature::feats().end(), 0,
+ 					[=](u32 n, feature f) { return n + (f.value() == w ? 1 : 0); }) != 8) m = 0;
+ 				if (w.sign().find_first_not_of("0123456789abcdef") != std::string::npos) n = 0;
+-				if (math::log2(w.size()) >> 2 != n) n = 0;
++				if (math::log2(u64(w.size())) >> 2 != n) n = 0;
+ 			}
+ 			if (m) { // if features are assumed as isomorphic
+ 				std::string list = "4x6patt 5x6patt 6x6patt 7x6patt 8x6patt 2x7patt 3x7patt 1x8patt 2x8patt ";

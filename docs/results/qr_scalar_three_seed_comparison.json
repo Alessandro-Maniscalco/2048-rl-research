@@ -1,0 +1,26 @@
+{
+  "qr_dqn": {
+    "training_seed_scores": [
+      10136.12,
+      5659.92,
+      6957.64
+    ],
+    "mean": 7584.56,
+    "sample_standard_deviation": 2303.0117509035863
+  },
+  "double_dqn": {
+    "training_seed_scores": [
+      3312.32,
+      5527.16,
+      2934.96
+    ],
+    "mean": 3924.813333333333,
+    "sample_standard_deviation": 1400.4414563034518
+  },
+  "paired_seed_gains": [
+    6823.800000000001,
+    132.76000000000022,
+    4022.6800000000003
+  ],
+  "limits": "Three training seeds, 4,194,304 transitions each, common 100 game seeds. Final checkpoint comparison. Same Transformer torso and initial mean Q per seed; QR has 817100 parameters vs scalar 407300 because of its quantile output head, so this is not parameter-matched."
+}
